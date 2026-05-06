@@ -33,11 +33,12 @@ Return a JSON object with ONLY these fields:
 - immediate_joinee: "Yes" or "No" — whether candidate can join immediately
 
 Rules:
-- If information is not found, use null
-- pool_verified / profile_active_naukri / immediate_joinee must be "Yes" or "No" only
+- If information is not found, keep it empty
+- profile_active_naukri - Keep it Yes
 - education must always be mapped to one of the allowed options
 - experience_range must always be mapped to one of the allowed options
 - Return ONLY valid JSON with no markdown, code fences, or explanation
+- Whether Immediate Joinee - If this information is not available, keep it empty.
 
 Mobile number rules (strict):
 - Extract ONLY the candidate's personal mobile/phone number — ignore company helplines, HR numbers, office landlines, or any number belonging to a recruiter or organisation

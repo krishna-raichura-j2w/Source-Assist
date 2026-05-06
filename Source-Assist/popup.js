@@ -204,6 +204,17 @@ function addFiles(files) {
   for (const f of files) if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   renderFileList();
 }
+function addImageFiles(files) {
+  const imgs = Array.from(files || []).filter(f => f && f.type && f.type.startsWith('image/'));
+  if (!imgs.length) return false;
+  const stamped = imgs.map(f => {
+    if (f.name && f.name !== 'image.png') return f;
+    const ext = (f.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+    return new File([f], `pasted-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`, { type: f.type });
+  });
+  addFiles(stamped);
+  return true;
+}
 function renderFileList() {
   const ul = document.getElementById('fileList'); ul.innerHTML = '';
   selectedFiles.forEach((f, i) => {
@@ -216,10 +227,20 @@ function renderFileList() {
 const dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput');
 dropZone.addEventListener('click', () => fileInput.click());
 document.getElementById('browseLink').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
-fileInput.addEventListener('change', () => { addFiles(fileInput.files); fileInput.value = ''; });
+fileInput.addEventListener('change', () => { addImageFiles(fileInput.files); fileInput.value = ''; });
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files); });
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addImageFiles(e.dataTransfer.files); });
+document.addEventListener('paste', e => {
+  if (!e.clipboardData) return;
+  const imgItems = Array.from(e.clipboardData.items || []).filter(it => it.kind === 'file' && it.type.startsWith('image/'));
+  if (!imgItems.length) return;
+  e.preventDefault();
+  const files = imgItems.map(it => it.getAsFile()).filter(Boolean);
+  if (!files.length) return;
+  if (currentMode !== 'image') { switchTab('image'); saveState(); }
+  addImageFiles(files);
+});
 
 // ── Extract ────────────────────────────────────────────────────────────────
 document.getElementById('extractBtn').addEventListener('click', extract);
