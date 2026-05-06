@@ -64,15 +64,6 @@ def init_db():
                     last_login_at TIMESTAMPTZ
                 );
 
-                CREATE TABLE IF NOT EXISTS otps (
-                    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                    email      VARCHAR(255) NOT NULL,
-                    otp_code   VARCHAR(6)   NOT NULL,
-                    expires_at TIMESTAMPTZ  NOT NULL,
-                    is_used    BOOLEAN DEFAULT FALSE,
-                    created_at TIMESTAMPTZ DEFAULT NOW()
-                );
-
                 CREATE TABLE IF NOT EXISTS activity_log (
                     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     user_id     UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -86,7 +77,6 @@ def init_db():
 
                 CREATE INDEX IF NOT EXISTS idx_activity_user_id    ON activity_log(user_id);
                 CREATE INDEX IF NOT EXISTS idx_activity_created_at ON activity_log(created_at DESC);
-                CREATE INDEX IF NOT EXISTS idx_otps_email          ON otps(email);
             """)
 
 
@@ -126,51 +116,6 @@ def update_last_login(user_id: str):
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute("UPDATE users SET last_login_at = NOW() WHERE id = %s", (user_id,))
-
-
-# ── OTPs ──────────────────────────────────────────────────────────────────
-
-def save_otp(email: str, otp_code: str):
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute("UPDATE otps SET is_used = TRUE WHERE email = %s AND is_used = FALSE", (email,))
-            cur.execute(
-                "INSERT INTO otps (email, otp_code, expires_at) VALUES (%s, %s, NOW() + INTERVAL '10 minutes')",
-                (email, otp_code),
-            )
-
-
-def validate_otp_only(email: str, otp_code: str) -> bool:
-    """Check OTP is valid without consuming it."""
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id FROM otps
-                WHERE email = %s AND otp_code = %s AND is_used = FALSE AND expires_at > NOW()
-                ORDER BY created_at DESC LIMIT 1
-                """,
-                (email, otp_code),
-            )
-            return cur.fetchone() is not None
-
-
-def check_and_use_otp(email: str, otp_code: str) -> bool:
-    with get_db() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT id FROM otps
-                WHERE email = %s AND otp_code = %s AND is_used = FALSE AND expires_at > NOW()
-                ORDER BY created_at DESC LIMIT 1
-                """,
-                (email, otp_code),
-            )
-            row = cur.fetchone()
-            if row:
-                cur.execute("UPDATE otps SET is_used = TRUE WHERE id = %s", (row["id"],))
-                return True
-            return False
 
 
 # ── Activity log ──────────────────────────────────────────────────────────
