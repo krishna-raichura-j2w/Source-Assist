@@ -6,7 +6,7 @@ from backend.core.security import get_current_user
 from backend.infra.database import log_activity
 
 from .schema import ConsultantProfile
-from .service import DEPLOYMENT, call_azure, image_block
+from .service import DEPLOYMENT, call_azure, image_block, pdf_to_text
 
 router = APIRouter(tags=["profile-extract"])
 
@@ -27,10 +27,18 @@ async def extract_profile(
         content.append({"type": "text", "text": f"Extract consultant profile from:\n\n{text}"})
     if images:
         if not text:
-            content.append({"type": "text", "text": "Extract consultant profile from the following image(s):"})
-        for img in images:
-            content.append(image_block(await img.read(), img.content_type or "image/jpeg"))
-            image_count += 1
+            content.append({"type": "text", "text": "Extract consultant profile from the following file(s):"})
+        for upload in images:
+            raw = await upload.read()
+            ct  = upload.content_type or ""
+            if "pdf" in ct:
+                extracted = pdf_to_text(raw)
+                if not extracted:
+                    raise HTTPException(status_code=422, detail=f"Could not extract text from PDF: {upload.filename}")
+                content.append({"type": "text", "text": f"Resume (extracted from PDF '{upload.filename}'):\n\n{extracted}"})
+            else:
+                content.append(image_block(raw, ct or "image/jpeg"))
+                image_count += 1
 
     action = "image" if image_count else "text"
     try:

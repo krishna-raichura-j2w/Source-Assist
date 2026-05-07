@@ -206,10 +206,10 @@ function addFiles(files) {
   for (const f of files) if (!selectedFiles.find(x => x.name === f.name && x.size === f.size)) selectedFiles.push(f);
   renderFileList();
 }
-function addImageFiles(files) {
-  const imgs = Array.from(files || []).filter(f => f && f.type && f.type.startsWith('image/'));
-  if (!imgs.length) return false;
-  const stamped = imgs.map(f => {
+function addAllowedFiles(files) {
+  const allowed = Array.from(files || []).filter(f => f && f.type && (f.type.startsWith('image/') || f.type === 'application/pdf'));
+  if (!allowed.length) return false;
+  const stamped = allowed.map(f => {
     if (f.name && f.name !== 'image.png') return f;
     const ext = (f.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
     return new File([f], `pasted-${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`, { type: f.type });
@@ -221,7 +221,12 @@ function renderFileList() {
   const ul = document.getElementById('fileList'); ul.innerHTML = '';
   selectedFiles.forEach((f, i) => {
     const li = document.createElement('li'); li.className = 'file-item';
-    li.innerHTML = `<svg class="file-item-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H6a2 2 0 00-2 2zm8 0v4h4l-4-4z" clip-rule="evenodd"/></svg><span class="file-item-name" title="${f.name}">${f.name}</span><button class="file-item-remove" data-i="${i}">&#215;</button>`;
+    const isPdf = f.type === 'application/pdf';
+    const icon = isPdf
+      ? `<svg class="file-item-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor" style="color:#DC2626"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/></svg>`
+      : `<svg class="file-item-icon" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0017.414 6L14 2.586A2 2 0 0012.586 2H6a2 2 0 00-2 2zm8 0v4h4l-4-4z" clip-rule="evenodd"/></svg>`;
+    const badge = isPdf ? `<span class="file-badge-pdf">PDF</span>` : '';
+    li.innerHTML = `${icon}${badge}<span class="file-item-name" title="${f.name}">${f.name}</span><button class="file-item-remove" data-i="${i}">&#215;</button>`;
     ul.appendChild(li);
   });
   ul.querySelectorAll('.file-item-remove').forEach(btn => btn.addEventListener('click', () => { selectedFiles.splice(+btn.dataset.i, 1); renderFileList(); }));
@@ -229,10 +234,10 @@ function renderFileList() {
 const dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput');
 dropZone.addEventListener('click', () => fileInput.click());
 document.getElementById('browseLink').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
-fileInput.addEventListener('change', () => { addImageFiles(fileInput.files); fileInput.value = ''; });
+fileInput.addEventListener('change', () => { addAllowedFiles(fileInput.files); fileInput.value = ''; });
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addImageFiles(e.dataTransfer.files); });
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); addAllowedFiles(e.dataTransfer.files); });
 document.addEventListener('paste', e => {
   if (!e.clipboardData) return;
   const imgItems = Array.from(e.clipboardData.items || []).filter(it => it.kind === 'file' && it.type.startsWith('image/'));

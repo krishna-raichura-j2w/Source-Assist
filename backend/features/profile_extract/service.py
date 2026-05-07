@@ -1,9 +1,11 @@
 import base64
+import io
 import json
 import os
 from datetime import date
 
 from openai import AzureOpenAI
+from pypdf import PdfReader
 
 from .schema import EDUCATION_OPTIONS, EXPERIENCE_OPTIONS, ConsultantProfile
 
@@ -28,7 +30,7 @@ Return a JSON object with ONLY these fields:
 - current_location: current city/location
 - profile_active_naukri: "Yes" or "No" — whether profile is active on Naukri
 - experience_range: must be one of {EXPERIENCE_OPTIONS} — pick closest match
-- current_company: current employer or company name
+- current_company: current employer/company where the candidate actively works. If anywhere in the resume it mentions the candidate is on payroll of a different company (e.g. "on payroll of ABC", "employed through ABC", "contract via ABC", "payrolled by ABC"), include the payroll company in brackets — e.g. "TCS (ABC)" where TCS is the working company and ABC is the payroll company. Search the entire resume for any such payroll or contract mention.
 - relevant_skills: comma-separated list of skills
 - immediate_joinee: "Yes" or "No" — whether candidate can join immediately
 
@@ -66,3 +68,8 @@ def call_azure(content: list) -> ConsultantProfile:
 def image_block(img_bytes: bytes, mime: str) -> dict:
     b64 = base64.b64encode(img_bytes).decode("utf-8")
     return {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{b64}"}}
+
+
+def pdf_to_text(pdf_bytes: bytes) -> str:
+    reader = PdfReader(io.BytesIO(pdf_bytes))
+    return "\n".join(page.extract_text() or "" for page in reader.pages).strip()
