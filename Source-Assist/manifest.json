@@ -1,13 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "SourceAssist",
+  "name": "Source Assist",
   "version": "2.0.0",
   "description": "AI-powered consultant profile extractor for J2W recruiters",
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "SourceAssist"
+    "default_title": "Source Assist",
+    "default_icon": "icons/logo.jpg"
+  },
+  "icons": {
+    "16": "icons/logo.jpg",
+    "48": "icons/logo.jpg",
+    "128": "icons/logo.jpg"
   },
   "side_panel": {
     "default_path": "popup.html"

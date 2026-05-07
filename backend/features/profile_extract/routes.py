@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from backend.core.security import get_current_user
-from backend.infra.database import log_activity
+from backend.infra.database import get_cost_stats, log_activity, log_api_cost
 
 from .schema import ConsultantProfile
 from .service import DEPLOYMENT, call_azure, image_block, pdf_to_text
@@ -42,7 +42,7 @@ async def extract_profile(
 
     action = "image" if image_count else "text"
     try:
-        result = call_azure(content)
+        result, cost = call_azure(content)
     except Exception as e:
         log_activity(current_user["user_id"], current_user["email"], action, image_count, "error", {"error": str(e)})
         raise
@@ -51,6 +51,10 @@ async def extract_profile(
         current_user["user_id"], current_user["email"],
         action, image_count, "success",
         {"name": result.name, "company": result.current_company},
+    )
+    log_api_cost(
+        user_id=current_user["user_id"], email=current_user["email"],
+        endpoint="/extract", **cost,
     )
     return result
 
@@ -67,9 +71,13 @@ async def extract_profiles_batch(
             {"type": "text", "text": "Extract consultant profile from this image:"},
             image_block(img_bytes, img.content_type or "image/jpeg"),
         ]
-        result = call_azure(content)
+        result, cost = call_azure(content)
         log_activity(current_user["user_id"], current_user["email"], "image", 1, "success",
                      {"name": result.name})
+        log_api_cost(
+            user_id=current_user["user_id"], email=current_user["email"],
+            endpoint="/extract/batch", **cost,
+        )
         profiles.append(result)
     return profiles
 

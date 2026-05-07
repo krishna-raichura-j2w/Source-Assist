@@ -14,9 +14,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 
 /* Auth */
 .auth-wrap { max-width:340px; margin:0 auto; padding:36px 24px 28px; display:flex; flex-direction:column; gap:16px; }
-.auth-logo { display:flex; align-items:center; gap:8px; font-size:20px; font-weight:700; letter-spacing:-.3px; color:var(--primary); }
-.auth-logo svg { width:22px; height:22px; }
-.auth-logo strong { color:var(--primary); }
+.auth-logo { display:flex; align-items:center; justify-content:center; gap:0; }
+.brand-mark { display:block; width:72px; height:72px; object-fit:contain; flex-shrink:0; }
 .auth-title { font-size:19px; font-weight:700; color:var(--text); }
 .auth-sub { font-size:12.5px; color:var(--muted); margin-top:3px; }
 
@@ -47,6 +46,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .auth-error { display:flex; align-items:flex-start; gap:7px; padding:9px 12px; background:var(--error-bg); border:1px solid #FECACA; border-radius:var(--radius); color:var(--error); font-size:12px; }
 .auth-footer-link { font-size:12px; color:var(--muted); text-align:center; }
 .auth-footer-link a { color:var(--primary); cursor:pointer; text-decoration:underline; }
+.otp-sent-hint { font-size:12.5px; color:var(--muted); text-align:center; padding:4px 0 2px; }
+.otp-sent-hint strong { color:var(--text); }
+.resend-line { font-size:12px; color:var(--muted); text-align:center; margin-top:2px; }
+.resend-line a { color:var(--primary); cursor:pointer; text-decoration:underline; }
 
 /* User bar */
 .user-bar { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:var(--primary); }
@@ -58,10 +61,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 /* Main shell */
 .shell { display:flex; flex-direction:column; gap:10px; padding:12px 14px 20px; }
 .header { display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--border); }
-.brand { display:flex; align-items:center; gap:7px; }
-.brand-icon { width:17px; height:17px; color:var(--primary); }
-.brand-name { font-size:14px; font-weight:600; color:var(--text); letter-spacing:-.2px; }
-.brand-name strong { color:var(--primary); }
+.brand { display:flex; align-items:center; gap:0; }
+.brand-mark--header { width:34px; height:34px; }
 .status-pill { display:flex; align-items:center; gap:5px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:3px 9px; font-size:11px; color:var(--muted); }
 .status-dot { width:7px; height:7px; border-radius:50%; background:#D1D5DB; transition:background .3s; }
 .status-dot.online  { background:var(--green); box-shadow:0 0 0 2px #D1FAE5; }

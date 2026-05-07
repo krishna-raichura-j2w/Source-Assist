@@ -17,6 +17,20 @@ client = AzureOpenAI(
 
 DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
 
+# USD per token for each known model. Falls back to gpt-4o-mini rates if unknown.
+_MODEL_RATES: dict[str, dict[str, float]] = {
+    "gpt-4o-mini": {"input": 0.15  / 1_000_000, "output": 0.60  / 1_000_000},
+    "gpt-4o":      {"input": 2.50  / 1_000_000, "output": 10.00 / 1_000_000},
+    "gpt-4":       {"input": 30.00 / 1_000_000, "output": 60.00 / 1_000_000},
+}
+
+
+def calc_cost(model: str, input_tokens: int, output_tokens: int) -> tuple[float, float, float]:
+    rates = _MODEL_RATES.get(model, _MODEL_RATES["gpt-4o-mini"])
+    inp   = round(input_tokens  * rates["input"],  8)
+    out   = round(output_tokens * rates["output"], 8)
+    return inp, out, round(inp + out, 8)
+
 SYSTEM_PROMPT = f"""You are an expert HR data extractor. Extract consultant profile information from the provided content.
 
 Return a JSON object with ONLY these fields:
@@ -52,7 +66,7 @@ Mobile number rules (strict):
 """
 
 
-def call_azure(content: list) -> ConsultantProfile:
+def call_azure(content: list) -> tuple[ConsultantProfile, dict]:
     response = client.chat.completions.create(
         model=DEPLOYMENT,
         messages=[
@@ -62,7 +76,23 @@ def call_azure(content: list) -> ConsultantProfile:
         temperature=0,
         response_format={"type": "json_object"},
     )
-    return ConsultantProfile(**json.loads(response.choices[0].message.content))
+    profile = ConsultantProfile(**json.loads(response.choices[0].message.content))
+    usage   = response.usage
+    inp, out, total = calc_cost(
+        DEPLOYMENT,
+        usage.prompt_tokens,
+        usage.completion_tokens,
+    )
+    cost_info = {
+        "model":           DEPLOYMENT,
+        "input_tokens":    usage.prompt_tokens,
+        "output_tokens":   usage.completion_tokens,
+        "total_tokens":    usage.total_tokens,
+        "input_cost_usd":  inp,
+        "output_cost_usd": out,
+        "total_cost_usd":  total,
+    }
+    return profile, cost_info
 
 
 def image_block(img_bytes: bytes, mime: str) -> dict:

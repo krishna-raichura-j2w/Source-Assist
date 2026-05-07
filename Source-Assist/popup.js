@@ -1,6 +1,6 @@
 const API_LOCAL = 'http://localhost:8000';
 const API_PROD  = 'https://source-assist.vercel.app';
-const API = API_PROD;
+const API = API_LOCAL;
 const ALLOWED_DOMAINS = ['joulestowatts.com', 'joulestowatts.co'];
 
 const EXCEL_ROWS = [
@@ -24,7 +24,7 @@ let authToken = null, currentMode = 'text', selectedFiles = [], lastResult = nul
 
 // ── Screens ────────────────────────────────────────────────────────────────
 function showScreen(id) {
-  ['screenLogin', 'screenRegister', 'screenMain'].forEach(s =>
+  ['screenLogin', 'screenRegister', 'screenForgot', 'screenMain'].forEach(s =>
     document.getElementById(s).classList.toggle('hidden', s !== id)
   );
 }
@@ -70,17 +70,19 @@ function wireEye(btnId, inputId, onId, offId) {
     document.getElementById(offId).classList.toggle('hidden', !show);
   });
 }
-wireEye('toggleLoginPass', 'loginPassword',      'eyeLoginOn',  'eyeLoginOff');
-wireEye('toggleRegPass1',  'regPassword',         'eyeReg1On',   'eyeReg1Off');
-wireEye('toggleRegPass2',  'regConfirmPassword',  'eyeReg2On',   'eyeReg2Off');
+wireEye('toggleLoginPass',   'loginPassword',        'eyeLoginOn',   'eyeLoginOff');
+wireEye('toggleRegPass1',    'regPassword',          'eyeReg1On',    'eyeReg1Off');
+wireEye('toggleRegPass2',    'regConfirmPassword',   'eyeReg2On',    'eyeReg2Off');
+wireEye('toggleForgotPass1', 'forgotPassword',       'eyeForgot1On', 'eyeForgot1Off');
+wireEye('toggleForgotPass2', 'forgotConfirmPassword','eyeForgot2On', 'eyeForgot2Off');
 
-// ── Register form validation ───────────────────────────────────────────────
+// ── Register form validation (step 1) ─────────────────────────────────────
 function checkRegisterForm() {
   const email   = document.getElementById('regEmail').value.trim();
   const p1      = document.getElementById('regPassword').value;
   const p2      = document.getElementById('regConfirmPassword').value;
   const hint    = document.getElementById('regMatchHint');
-  const btn     = document.getElementById('registerBtn');
+  const btn     = document.getElementById('sendRegOtpBtn');
   const atIdx   = email.indexOf('@');
   const domain  = atIdx >= 0 ? email.slice(atIdx + 1).toLowerCase() : '';
   const emailOk = ALLOWED_DOMAINS.includes(domain);
@@ -104,6 +106,11 @@ document.getElementById('regEmail').addEventListener('blur', () => {
 });
 document.getElementById('regPassword').addEventListener('input', checkRegisterForm);
 document.getElementById('regConfirmPassword').addEventListener('input', checkRegisterForm);
+
+// OTP input enables Create Account button only when 6 digits entered
+document.getElementById('regOtp').addEventListener('input', () => {
+  document.getElementById('registerBtn').disabled = document.getElementById('regOtp').value.replace(/\D/g, '').length < 6;
+});
 
 // ── Bootstrap ──────────────────────────────────────────────────────────────
 chrome.storage.local.get(['authToken', 'userEmail', 'savedText', 'savedMode', 'savedResult'], async store => {
@@ -149,27 +156,175 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   finally { setAuthLoading('loginBtn', 'loginBtnLabel', 'loginSpinner', false, 'Sign in'); }
 });
 
-document.getElementById('goToRegister').addEventListener('click', () => { clearAuthError('loginError'); showScreen('screenRegister'); });
+document.getElementById('goToRegister').addEventListener('click', () => { clearAuthError('loginError'); resetRegisterScreen(); showScreen('screenRegister'); });
 document.getElementById('goToLogin').addEventListener('click', () => { showScreen('screenLogin'); });
+document.getElementById('goToForgot').addEventListener('click', () => { clearAuthError('loginError'); resetForgotScreen(); showScreen('screenForgot'); });
+document.getElementById('forgotGoToLogin').addEventListener('click', () => { showScreen('screenLogin'); });
 
-// ── Register ───────────────────────────────────────────────────────────────
+function resetRegisterScreen() {
+  document.getElementById('regStep1').classList.remove('hidden');
+  document.getElementById('regStep2').classList.add('hidden');
+  document.getElementById('regOtp').value = '';
+  document.getElementById('registerBtn').disabled = true;
+  clearAuthError('sendOtpError');
+  clearAuthError('registerError');
+}
+
+// ── Register step 1: send OTP ──────────────────────────────────────────────
+document.getElementById('sendRegOtpBtn').addEventListener('click', async () => {
+  const email   = document.getElementById('regEmail').value.trim();
+  clearAuthError('sendOtpError');
+  setAuthLoading('sendRegOtpBtn', 'sendRegOtpLabel', 'sendRegOtpSpinner', true, 'Sending code…');
+  try {
+    const res = await fetch(`${API}/auth/register/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Failed to send code');
+    document.getElementById('regSentTo').textContent = email;
+    document.getElementById('regStep1').classList.add('hidden');
+    document.getElementById('regStep2').classList.remove('hidden');
+    setTimeout(() => document.getElementById('regOtp').focus(), 100);
+  } catch(e) { showAuthError('sendOtpError', e.message); }
+  finally { setAuthLoading('sendRegOtpBtn', 'sendRegOtpLabel', 'sendRegOtpSpinner', false, 'Send Verification Code'); }
+});
+
+// ── Register step 2: verify OTP + create account ──────────────────────────
 document.getElementById('registerBtn').addEventListener('click', async () => {
   const email   = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
   const confirm  = document.getElementById('regConfirmPassword').value;
+  const otp      = document.getElementById('regOtp').value.trim();
   clearAuthError('registerError');
   setAuthLoading('registerBtn', 'registerBtnLabel', 'registerSpinner', true, 'Creating account…');
   try {
     const res = await fetch(`${API}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, confirm_password: confirm }),
+      body: JSON.stringify({ email, password, confirm_password: confirm, otp }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Registration failed');
     await onLoginSuccess(data.token, data.email);
   } catch(e) { showAuthError('registerError', e.message); }
-  finally { setAuthLoading('registerBtn', 'registerBtnLabel', 'registerSpinner', false, 'Create account'); }
+  finally { setAuthLoading('registerBtn', 'registerBtnLabel', 'registerSpinner', false, 'Create Account'); }
+});
+
+document.getElementById('resendRegOtp').addEventListener('click', async () => {
+  const email = document.getElementById('regEmail').value.trim();
+  clearAuthError('registerError');
+  try {
+    const res = await fetch(`${API}/auth/register/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Failed'); }
+    document.getElementById('regOtp').value = '';
+    document.getElementById('registerBtn').disabled = true;
+    document.getElementById('regOtp').focus();
+  } catch(e) { showAuthError('registerError', e.message); }
+});
+
+document.getElementById('changeRegEmail').addEventListener('click', () => {
+  document.getElementById('regStep2').classList.add('hidden');
+  document.getElementById('regStep1').classList.remove('hidden');
+  clearAuthError('registerError');
+  document.getElementById('regEmail').focus();
+});
+
+// ── Forgot password ────────────────────────────────────────────────────────
+function resetForgotScreen() {
+  document.getElementById('forgotStep1').classList.remove('hidden');
+  document.getElementById('forgotStep2').classList.add('hidden');
+  document.getElementById('forgotEmail').value = '';
+  document.getElementById('forgotOtp').value = '';
+  document.getElementById('forgotPassword').value = '';
+  document.getElementById('forgotConfirmPassword').value = '';
+  document.getElementById('forgotMatchHint').className = 'match-hint hidden';
+  document.getElementById('resetPassBtn').disabled = true;
+  clearAuthError('forgotSendError');
+  clearAuthError('resetPassError');
+}
+
+function checkForgotResetForm() {
+  const otp  = document.getElementById('forgotOtp').value.replace(/\D/g, '');
+  const p1   = document.getElementById('forgotPassword').value;
+  const p2   = document.getElementById('forgotConfirmPassword').value;
+  const hint = document.getElementById('forgotMatchHint');
+  const btn  = document.getElementById('resetPassBtn');
+  const match = p1.length >= 6 && p1 === p2;
+  if (p2) {
+    hint.className   = `match-hint ${match ? 'match' : 'nomatch'}`;
+    hint.textContent = match ? '✓ Passwords match' : p1 !== p2 ? '✗ Passwords do not match' : '✗ Min 6 characters';
+  } else {
+    hint.className = 'match-hint hidden';
+  }
+  btn.disabled = !(otp.length === 6 && match);
+}
+
+wireEmailValidation('forgotEmail', 'forgotEmailHint', 'sendForgotOtpBtn');
+
+document.getElementById('forgotOtp').addEventListener('input', checkForgotResetForm);
+document.getElementById('forgotPassword').addEventListener('input', checkForgotResetForm);
+document.getElementById('forgotConfirmPassword').addEventListener('input', checkForgotResetForm);
+
+document.getElementById('sendForgotOtpBtn').addEventListener('click', async () => {
+  const email = document.getElementById('forgotEmail').value.trim();
+  clearAuthError('forgotSendError');
+  setAuthLoading('sendForgotOtpBtn', 'sendForgotOtpLabel', 'sendForgotOtpSpinner', true, 'Sending code…');
+  try {
+    const res = await fetch(`${API}/auth/forgot-password/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Failed to send code');
+    document.getElementById('forgotSentTo').textContent = email;
+    document.getElementById('forgotStep1').classList.add('hidden');
+    document.getElementById('forgotStep2').classList.remove('hidden');
+    setTimeout(() => document.getElementById('forgotOtp').focus(), 100);
+  } catch(e) { showAuthError('forgotSendError', e.message); }
+  finally { setAuthLoading('sendForgotOtpBtn', 'sendForgotOtpLabel', 'sendForgotOtpSpinner', false, 'Send Reset Code'); }
+});
+
+document.getElementById('resetPassBtn').addEventListener('click', async () => {
+  const email   = document.getElementById('forgotEmail').value.trim();
+  const otp     = document.getElementById('forgotOtp').value.trim();
+  const password = document.getElementById('forgotPassword').value;
+  const confirm  = document.getElementById('forgotConfirmPassword').value;
+  clearAuthError('resetPassError');
+  setAuthLoading('resetPassBtn', 'resetPassLabel', 'resetPassSpinner', true, 'Resetting…');
+  try {
+    const res = await fetch(`${API}/auth/forgot-password/reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp, password, confirm_password: confirm }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Reset failed');
+    await onLoginSuccess(data.token, data.email);
+  } catch(e) { showAuthError('resetPassError', e.message); }
+  finally { setAuthLoading('resetPassBtn', 'resetPassLabel', 'resetPassSpinner', false, 'Reset Password'); }
+});
+
+document.getElementById('resendForgotOtp').addEventListener('click', async () => {
+  const email = document.getElementById('forgotEmail').value.trim();
+  clearAuthError('resetPassError');
+  try {
+    const res = await fetch(`${API}/auth/forgot-password/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Failed'); }
+    document.getElementById('forgotOtp').value = '';
+    checkForgotResetForm();
+    document.getElementById('forgotOtp').focus();
+  } catch(e) { showAuthError('resetPassError', e.message); }
 });
 
 async function onLoginSuccess(token, email) {

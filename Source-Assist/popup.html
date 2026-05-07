@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SourceAssist</title>
+  <title>Source Assist</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
@@ -11,10 +11,7 @@
 <div id="screenLogin" class="screen">
   <div class="auth-wrap">
     <div class="auth-logo">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>Source<strong>Assist</strong></span>
+      <img class="brand-mark" src="icons/logo.jpg" alt="Joules to Watts" />
     </div>
     <div>
       <h2 class="auth-title">Welcome back</h2>
@@ -41,6 +38,72 @@
       <span class="spinner hidden" id="loginSpinner"></span>
     </button>
     <p class="auth-footer-link">Don't have an account? <a id="goToRegister">Create account</a></p>
+    <p class="auth-footer-link"><a id="goToForgot">Forgot password?</a></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ SCREEN: FORGOT PASSWORD -->
+<div id="screenForgot" class="screen hidden">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <img class="brand-mark" src="icons/logo.jpg" alt="Joules to Watts" />
+    </div>
+    <div>
+      <h2 class="auth-title">Reset your password</h2>
+      <p class="auth-sub">Enter your work email to receive a reset code</p>
+    </div>
+
+    <!-- Step 1: email -->
+    <div id="forgotStep1">
+      <div class="form-group">
+        <label>Work Email</label>
+        <input id="forgotEmail" type="email" placeholder="you@joulestowatts.com" autocomplete="email" />
+        <span class="domain-hint" id="forgotEmailHint"></span>
+      </div>
+      <div class="auth-error hidden" id="forgotSendError"></div>
+      <button class="btn-primary" id="sendForgotOtpBtn">
+        <span id="sendForgotOtpLabel">Send Reset Code</span>
+        <span class="spinner hidden" id="sendForgotOtpSpinner"></span>
+      </button>
+    </div>
+
+    <!-- Step 2: reset code + new password -->
+    <div id="forgotStep2" class="hidden">
+      <p class="otp-sent-hint">Code sent to <strong id="forgotSentTo"></strong></p>
+      <div class="form-group">
+        <label>Reset Code</label>
+        <input id="forgotOtp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" autocomplete="one-time-code" />
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <div class="pass-wrap">
+          <input id="forgotPassword" type="password" placeholder="Min 6 characters" autocomplete="new-password" />
+          <button class="eye-btn" id="toggleForgotPass1" type="button" tabindex="-1">
+            <svg id="eyeForgot1On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+            <svg id="eyeForgot1Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <div class="pass-wrap">
+          <input id="forgotConfirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password" />
+          <button class="eye-btn" id="toggleForgotPass2" type="button" tabindex="-1">
+            <svg id="eyeForgot2On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+            <svg id="eyeForgot2Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
+          </button>
+        </div>
+        <span class="match-hint hidden" id="forgotMatchHint"></span>
+      </div>
+      <div class="auth-error hidden" id="resetPassError"></div>
+      <button class="btn-primary" id="resetPassBtn" disabled>
+        <span id="resetPassLabel">Reset Password</span>
+        <span class="spinner hidden" id="resetPassSpinner"></span>
+      </button>
+      <p class="resend-line">Didn't get it? <a id="resendForgotOtp">Resend code</a></p>
+    </div>
+
+    <p class="auth-footer-link" style="margin-top:4px;"><a id="forgotGoToLogin">&#8592; Back to Sign in</a></p>
   </div>
 </div>
 
@@ -48,47 +111,64 @@
 <div id="screenRegister" class="screen hidden">
   <div class="auth-wrap">
     <div class="auth-logo">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>Source<strong>Assist</strong></span>
+      <img class="brand-mark" src="icons/logo.jpg" alt="Joules to Watts" />
     </div>
     <div>
       <h2 class="auth-title">Create your account</h2>
       <p class="auth-sub">Register with your work email</p>
     </div>
-    <div class="form-group">
-      <label>Work Email</label>
-      <input id="regEmail" type="email" placeholder="you@joulestowatts.com" autocomplete="email" />
-      <span class="domain-hint" id="regEmailHint"></span>
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <div class="pass-wrap">
-        <input id="regPassword" type="password" placeholder="Min 6 characters" autocomplete="new-password" />
-        <button class="eye-btn" id="toggleRegPass1" type="button" tabindex="-1">
-          <svg id="eyeReg1On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
-          <svg id="eyeReg1Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
-        </button>
+
+    <!-- Step 1: details -->
+    <div id="regStep1">
+      <div class="form-group">
+        <label>Work Email</label>
+        <input id="regEmail" type="email" placeholder="you@joulestowatts.com" autocomplete="email" />
+        <span class="domain-hint" id="regEmailHint"></span>
       </div>
-    </div>
-    <div class="form-group">
-      <label>Confirm Password</label>
-      <div class="pass-wrap">
-        <input id="regConfirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password" />
-        <button class="eye-btn" id="toggleRegPass2" type="button" tabindex="-1">
-          <svg id="eyeReg2On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
-          <svg id="eyeReg2Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
-        </button>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="pass-wrap">
+          <input id="regPassword" type="password" placeholder="Min 6 characters" autocomplete="new-password" />
+          <button class="eye-btn" id="toggleRegPass1" type="button" tabindex="-1">
+            <svg id="eyeReg1On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+            <svg id="eyeReg1Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
+          </button>
+        </div>
       </div>
-      <span class="match-hint hidden" id="regMatchHint"></span>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="pass-wrap">
+          <input id="regConfirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password" />
+          <button class="eye-btn" id="toggleRegPass2" type="button" tabindex="-1">
+            <svg id="eyeReg2On" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+            <svg id="eyeReg2Off" class="hidden" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/><path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.064 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/></svg>
+          </button>
+        </div>
+        <span class="match-hint hidden" id="regMatchHint"></span>
+      </div>
+      <div class="auth-error hidden" id="sendOtpError"></div>
+      <button class="btn-primary" id="sendRegOtpBtn" disabled>
+        <span id="sendRegOtpLabel">Send Verification Code</span>
+        <span class="spinner hidden" id="sendRegOtpSpinner"></span>
+      </button>
     </div>
-    <div class="auth-error hidden" id="registerError"></div>
-    <button class="btn-primary" id="registerBtn" disabled>
-      <span id="registerBtnLabel">Create account</span>
-      <span class="spinner hidden" id="registerSpinner"></span>
-    </button>
-    <p class="auth-footer-link"><a id="goToLogin">&#8592; Back to Sign in</a></p>
+
+    <!-- Step 2: OTP verification -->
+    <div id="regStep2" class="hidden">
+      <p class="otp-sent-hint">Code sent to <strong id="regSentTo"></strong></p>
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input id="regOtp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit code" autocomplete="one-time-code" />
+      </div>
+      <div class="auth-error hidden" id="registerError"></div>
+      <button class="btn-primary" id="registerBtn" disabled>
+        <span id="registerBtnLabel">Create Account</span>
+        <span class="spinner hidden" id="registerSpinner"></span>
+      </button>
+      <p class="resend-line">Didn't get it? <a id="resendRegOtp">Resend code</a> &nbsp;·&nbsp; <a id="changeRegEmail">Change email</a></p>
+    </div>
+
+    <p class="auth-footer-link" style="margin-top:4px;"><a id="goToLogin">&#8592; Back to Sign in</a></p>
   </div>
 </div>
 
@@ -104,10 +184,7 @@
   <div class="shell">
     <header class="header">
       <div class="brand">
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="none">
-          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="brand-name">Source<strong>Assist</strong></span>
+        <img class="brand-mark brand-mark--header" src="icons/logo.jpg" alt="Joules to Watts" />
       </div>
       <div class="status-pill">
         <span class="status-dot" id="statusDot"></span>
