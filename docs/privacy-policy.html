@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – Source Assist Chrome Extension</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #3730A3;
+      --text: #111827;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --bg: #F9FAFB;
+      --surface: #FFFFFF;
+      --green: #059669;
+      --green-bg: #D1FAE5;
+      --red: #DC2626;
+      --red-bg: #FEE2E2;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 32px 24px 28px;
+      text-align: center;
+    }
+    .header-logo {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+      margin-bottom: 6px;
+    }
+    .header-sub { font-size: 13px; opacity: .8; margin-bottom: 4px; }
+
+    /* ── Layout ── */
+    .page-wrap {
+      display: flex;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      gap: 40px;
+      align-items: flex-start;
+    }
+
+    /* ── Sidebar ToC ── */
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 24px;
+    }
+    .toc-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .toc ol {
+      list-style: none;
+      padding: 0;
+      border-left: 2px solid var(--border);
+    }
+    .toc li a {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      margin-left: -2px;
+      transition: color .15s, border-color .15s;
+    }
+    .toc li a:hover {
+      color: var(--primary);
+      border-left-color: var(--primary);
+    }
+
+    /* ── Main content ── */
+    main { flex: 1; min-width: 0; }
+
+    .meta-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      font-size: 12.5px;
+      color: var(--muted);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .meta-bar span strong { color: var(--text); }
+
+    /* ── Notice boxes ── */
+    .notice {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .notice-blue {
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      color: var(--primary-dark);
+    }
+    .notice-green {
+      background: var(--green-bg);
+      border: 1px solid #6EE7B7;
+      color: #064E3B;
+    }
+    .notice-yellow {
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      color: #78350F;
+    }
+    .notice strong { font-weight: 700; }
+
+    /* ── Section headings ── */
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 40px 0 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary);
+      scroll-margin-top: 24px;
+    }
+    h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 18px 0 6px;
+    }
+    p { margin-bottom: 12px; color: #374151; }
+    ul, ol { padding-left: 22px; margin-bottom: 12px; color: #374151; }
+    li { margin-bottom: 5px; }
+    code {
+      background: #F3F4F6;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #B45309;
+    }
+    strong { color: var(--text); }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    thead tr { background: #F3F4F6; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: #374151;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(odd) td { background: var(--surface); }
+    tbody tr:nth-child(even) td { background: var(--bg); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .badge-no  { background: var(--red-bg);  color: var(--red); }
+    .badge-yes { background: var(--green-bg); color: var(--green); }
+    .badge-na  { background: #F3F4F6; color: var(--muted); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    footer a { color: var(--primary); text-decoration: underline; }
+
+    @media (max-width: 720px) {
+      .page-wrap { flex-direction: column; padding: 24px 16px 60px; gap: 24px; }
+      .toc { width: 100%; position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">⚡ Source Assist</div>
+  <p class="header-sub">Privacy Policy — Chrome Extension</p>
+  <p class="header-sub">Joules to Watts (J2W) &nbsp;·&nbsp; Effective May 2026</p>
+</header>
+
+<div class="page-wrap">
+
+  <!-- ── Sidebar Table of Contents ── -->
+  <nav class="toc" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ol>
+      <li><a href="#overview">Overview &amp; Purpose</a></li>
+      <li><a href="#scope">Scope &amp; Applicability</a></li>
+      <li><a href="#single-purpose">Single Purpose Statement</a></li>
+      <li><a href="#data-collected">Data We Collect</a></li>
+      <li><a href="#data-not-collected">Data We Do NOT Collect</a></li>
+      <li><a href="#how-used">How We Use Data</a></li>
+      <li><a href="#limited-use">Limited Use Disclosure</a></li>
+      <li><a href="#sharing">Data Sharing &amp; Third Parties</a></li>
+      <li><a href="#permissions">Chrome Permissions Explained</a></li>
+      <li><a href="#remote-code">Remote Code Policy</a></li>
+      <li><a href="#retention">Data Retention</a></li>
+      <li><a href="#security">Security Measures</a></li>
+      <li><a href="#user-rights">Your Rights</a></li>
+      <li><a href="#children">Children's Privacy</a></li>
+      <li><a href="#changes">Policy Changes</a></li>
+      <li><a href="#contact">Contact Us</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── Main Content ── -->
+  <main>
+
+    <div class="meta-bar">
+      <span><strong>Extension:</strong> Source Assist</span>
+      <span><strong>Developer:</strong> Joules to Watts (J2W)</span>
+      <span><strong>Manifest:</strong> Version 3</span>
+      <span><strong>Extension Version:</strong> 2.0.0</span>
+      <span><strong>Effective:</strong> 1 May 2026</span>
+      <span><strong>Last Updated:</strong> 1 May 2026</span>
+    </div>
+
+    <!-- 1. Overview -->
+    <h2 id="overview">1. Overview &amp; Purpose</h2>
+    <p>
+      This Privacy Policy describes how <strong>Joules to Watts</strong> ("J2W", "we", "us", or "our")
+      collects, uses, and protects information when you use the <strong>Source Assist</strong> Chrome
+      Extension ("the Extension", "Source Assist").
+    </p>
+    <p>
+      Source Assist is an AI-powered recruitment tool that helps J2W recruiters extract structured
+      consultant profile information from text, images, and PDF résumés. The extracted data is
+      formatted for direct pasting into J2W's internal Excel-based tracking system.
+    </p>
+    <p>
+      By installing or using the Extension, you agree to the collection and use of information in
+      accordance with this policy.
+    </p>
+
+    <!-- 2. Scope -->
+    <h2 id="scope">2. Scope &amp; Applicability</h2>
+
+    <div class="notice notice-blue">
+      <strong>Internal Enterprise Tool Only.</strong> Source Assist is an internal tool exclusively
+      for employees of Joules to Watts. It is <strong>not</strong> available to or intended for the
+      general public. Access is technically enforced — only email addresses ending in
+      <code>@joulestowatts.com</code> or <code>@joulestowatts.co</code> can register or log in.
+    </div>
+
+    <p>
+      This policy applies solely to the Source Assist Chrome Extension published on the
+      Chrome Web Store. It governs all data processing that occurs through the Extension and its
+      supporting backend infrastructure.
+    </p>
+
+    <!-- 3. Single Purpose -->
+    <h2 id="single-purpose">3. Single Purpose Statement</h2>
+
+    <div class="notice notice-green">
+      <strong>Source Assist has a single, clearly defined purpose:</strong><br />
+      To extract structured consultant profile data (name, contact, skills, experience, etc.)
+      from recruiter-submitted text, image screenshots, and PDF résumés using AI, and copy
+      the result to the clipboard in a format ready for pasting into Excel.
+    </div>
+
+    <p>
+      The Extension does not perform any other function. It does not monitor browsing activity,
+      inject content into pages, capture keystrokes, track user behaviour outside the Extension
+      panel, or serve advertisements.
+    </p>
+
+    <!-- 4. Data We Collect -->
+    <h2 id="data-collected">4. Data We Collect</h2>
+    <p>
+      We collect only the minimum data necessary to operate the Extension. The following table
+      describes every category of data collected, aligned with the
+      <a href="https://developer.chrome.com/docs/webstore/program-policies/user-data-faq/"
+         target="_blank" rel="noopener">Chrome Web Store User Data Policy</a> categories.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Chrome Policy Category</th>
+          <th>What we collect</th>
+          <th>Collected?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Personally Identifiable Information</strong></td>
+          <td>Work email address (for account creation, login, OTP delivery)</td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>Authentication Information</strong></td>
+          <td>
+            Password stored as a bcrypt hash (never plain text); JWT session token stored
+            locally in <code>chrome.storage.local</code>
+          </td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>Website Content</strong></td>
+          <td>
+            Candidate résumé text, screenshot images, or PDF files that you <em>explicitly</em>
+            paste or upload into the Extension panel for extraction. This content is processed
+            by the AI and immediately discarded — it is never stored persistently.
+          </td>
+          <td><span class="badge badge-yes">Processed, not stored</span></td>
+        </tr>
+        <tr>
+          <td><strong>User Activity</strong></td>
+          <td>
+            Extraction action logs: type (text/image/PDF), file count, success/failure status,
+            timestamp, and extracted name/company. Used for internal analytics only.
+          </td>
+          <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+          <td><strong>Financial Information</strong></td>
+          <td>Not collected</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Health Information</strong></td>
+          <td>Not collected</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Personal Communications</strong></td>
+          <td>Not collected</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Location Data</strong></td>
+          <td>Not collected</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Web History / Browsing Activity</strong></td>
+          <td>Not collected</td>
+          <td><span class="badge badge-no">No</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Additional Technical Data Collected</h3>
+    <ul>
+      <li>
+        <strong>API Usage &amp; Cost Logs</strong> — input token count, output token count,
+        estimated USD cost, model name, and API endpoint per extraction call. Used for internal
+        cost monitoring and capacity planning only.
+      </li>
+      <li>
+        <strong>Session State (local only)</strong> — your last extraction result and selected
+        tab mode, stored exclusively in <code>chrome.storage.local</code> on your device to
+        restore your view when reopening the panel. Never transmitted to our servers.
+      </li>
+    </ul>
+
+    <!-- 5. Data We Do NOT Collect -->
+    <h2 id="data-not-collected">5. Data We Do NOT Collect</h2>
+
+    <div class="notice notice-green">
+      <strong>Source Assist explicitly does not collect any of the following:</strong>
+    </div>
+
+    <ul>
+      <li>Browsing history, URLs visited, or page content of any website you visit</li>
+      <li>Keystrokes, mouse movements, or any user input outside the Extension side panel</li>
+      <li>Screenshots or content of any web page you are viewing</li>
+      <li>Microphone, camera, or any device sensor data</li>
+      <li>Your device's IP address or geolocation</li>
+      <li>Any data from your Google account</li>
+      <li>Payment or financial information</li>
+      <li>Health or medical information</li>
+      <li>Information from other browser tabs or windows</li>
+      <li>Cookies from other websites</li>
+    </ul>
+
+    <!-- 6. How We Use Data -->
+    <h2 id="how-used">6. How We Use Your Data</h2>
+
+    <table>
+      <thead>
+        <tr><th>Data</th><th>How It Is Used</th><th>Legal Basis</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Email address</td>
+          <td>Account registration, login verification, OTP delivery for email verification and password reset</td>
+          <td>Contractual necessity</td>
+        </tr>
+        <tr>
+          <td>Password hash</td>
+          <td>Verifying your identity at login</td>
+          <td>Contractual necessity</td>
+        </tr>
+        <tr>
+          <td>Submitted content (text / images / PDFs)</td>
+          <td>Transmitted to the AI backend for profile field extraction only; discarded after processing — never stored in a database</td>
+          <td>User's explicit action (you initiate each extraction)</td>
+        </tr>
+        <tr>
+          <td>Activity logs</td>
+          <td>Internal usage analytics and audit trail accessible to J2W administrators</td>
+          <td>Legitimate interest (enterprise governance)</td>
+        </tr>
+        <tr>
+          <td>API cost logs</td>
+          <td>Internal cost monitoring and AI budget oversight</td>
+          <td>Legitimate interest (cost management)</td>
+        </tr>
+        <tr>
+          <td>Local session state</td>
+          <td>Restores your last view when reopening the panel</td>
+          <td>User's implicit consent (browser-local storage)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      <strong>We do not use any data for advertising, behavioural profiling, resale, or any
+      purpose outside operating and improving Source Assist for J2W employees.</strong>
+    </p>
+
+    <!-- 7. Limited Use -->
+    <h2 id="limited-use">7. Limited Use Disclosure</h2>
+
+    <div class="notice notice-yellow">
+      <strong>Chrome Web Store Limited Use Certification</strong><br /><br />
+      Source Assist's use of information received from Chrome APIs and user-provided data is
+      limited to the following:
+      <ol style="margin-top:10px;padding-left:20px;">
+        <li>Providing and improving the core profile-extraction features of the Extension.</li>
+        <li>Authenticating the user session to ensure access is restricted to authorised J2W staff.</li>
+        <li>Internal operational analytics and cost monitoring for J2W administrators.</li>
+      </ol>
+      <br />
+      We <strong>do not</strong> use data to:
+      <ul style="margin-top:4px;padding-left:20px;">
+        <li>Serve advertisements or personalise ads</li>
+        <li>Transfer data to third parties for purposes unrelated to Extension functionality</li>
+        <li>Determine creditworthiness or for lending purposes</li>
+        <li>Sell, share, or rent user data to any party</li>
+      </ul>
+    </div>
+
+    <!-- 8. Sharing -->
+    <h2 id="sharing">8. Data Sharing &amp; Third-Party Services</h2>
+    <p>
+      We do not sell, rent, or trade your personal information. We share data only with the
+      following sub-processors, strictly to operate the Extension:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Sub-processor</th>
+          <th>Provider</th>
+          <th>Purpose</th>
+          <th>Data Shared</th>
+          <th>Privacy Policy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Azure OpenAI Service</td>
+          <td>Microsoft Corporation</td>
+          <td>AI inference — GPT-4o-mini model performs the profile field extraction</td>
+          <td>Submitted résumé text / images only (not account data)</td>
+          <td><a href="https://privacy.microsoft.com/en-us/privacystatement" target="_blank" rel="noopener">Microsoft Privacy Statement</a></td>
+        </tr>
+        <tr>
+          <td>Supabase (PostgreSQL)</td>
+          <td>Supabase Inc.</td>
+          <td>Cloud database hosting for user accounts, activity logs, and cost records</td>
+          <td>Email, password hash, activity and cost log records</td>
+          <td><a href="https://supabase.com/privacy" target="_blank" rel="noopener">Supabase Privacy Policy</a></td>
+        </tr>
+        <tr>
+          <td>SMTP2go</td>
+          <td>SMTP2go Pty Ltd</td>
+          <td>Transactional email delivery — sends OTP verification and password-reset codes</td>
+          <td>Recipient email address and OTP code</td>
+          <td><a href="https://www.smtp2go.com/privacy/" target="_blank" rel="noopener">SMTP2go Privacy Policy</a></td>
+        </tr>
+        <tr>
+          <td>Vercel</td>
+          <td>Vercel Inc.</td>
+          <td>Hosting the Source Assist backend API</td>
+          <td>Standard HTTP request metadata (handled by Vercel infrastructure)</td>
+          <td><a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">Vercel Privacy Policy</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      No other third parties receive any data. We do not use analytics platforms (Google Analytics,
+      Mixpanel, etc.) or advertising networks.
+    </p>
+
+    <!-- 9. Permissions -->
+    <h2 id="permissions">9. Chrome Extension Permissions Explained</h2>
+    <p>
+      The following table lists every permission declared in the Extension's
+      <code>manifest.json</code> and explains exactly why it is required. No permissions are
+      requested beyond what is strictly necessary for the Extension to function.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Permission</th>
+          <th>Why It Is Required</th>
+          <th>Data Accessed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>sidePanel</code></td>
+          <td>
+            Enables the Extension to open as a Chrome side panel, allowing recruiters to use
+            it alongside any webpage without switching tabs.
+          </td>
+          <td>None — UI display only</td>
+        </tr>
+        <tr>
+          <td><code>storage</code></td>
+          <td>
+            Stores your authentication token and UI session state in
+            <code>chrome.storage.local</code> on your device. This keeps you signed in between
+            browser sessions without requiring re-login.
+          </td>
+          <td>Auth JWT token, email (display), last extraction result (your device only)</td>
+        </tr>
+        <tr>
+          <td><code>clipboardWrite</code></td>
+          <td>
+            Writes the formatted extraction result to your clipboard when you click
+            "Copy for Excel", so you can paste the data directly into the J2W tracking spreadsheet.
+          </td>
+          <td>Write only — never reads from clipboard</td>
+        </tr>
+        <tr>
+          <td>Host: <code>https://*.vercel.app/*</code></td>
+          <td>
+            Allows the Extension to communicate with the Source Assist backend API deployed
+            on Vercel for authentication and AI-powered profile extraction.
+          </td>
+          <td>API requests to Source Assist backend only</td>
+        </tr>
+        <tr>
+          <td>Host: <code>http://localhost/*</code></td>
+          <td>
+            Allows the Extension to connect to a locally running development server during
+            testing and development by J2W engineers.
+          </td>
+          <td>API requests to local development server only</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The Extension does <strong>not</strong> request or use the following sensitive permissions:
+      <code>tabs</code>, <code>webRequest</code>, <code>history</code>, <code>bookmarks</code>,
+      <code>cookies</code>, <code>identity</code>, <code>geolocation</code>,
+      <code>notifications</code>, or <code>nativeMessaging</code>. It does
+      <strong>not</strong> read, modify, intercept, or inject scripts into any web page.
+    </p>
+
+    <!-- 10. Remote Code -->
+    <h2 id="remote-code">10. Remote Code Policy</h2>
+
+    <div class="notice notice-green">
+      <strong>Source Assist does not use remote code.</strong><br /><br />
+      All JavaScript executed by the Extension is contained within the extension package
+      submitted to the Chrome Web Store. No code is downloaded, injected, or executed from
+      external URLs at runtime. The Extension communicates with its own backend API to
+      <em>receive data</em> (extraction results), not to receive or execute code.
+      This complies fully with the Chrome Web Store's Remote Code policy.
+    </div>
+
+    <!-- 11. Retention -->
+    <h2 id="retention">11. Data Retention</h2>
+
+    <table>
+      <thead>
+        <tr><th>Data Type</th><th>Retention Period</th><th>Location</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Account (email, password hash)</td>
+          <td>Until account deletion is requested by the user or J2W administrator</td>
+          <td>Supabase database</td>
+        </tr>
+        <tr>
+          <td>Submitted résumé content (text / images / PDFs)</td>
+          <td><strong>Not stored.</strong> Passed to AI for processing and immediately discarded. Zero persistence.</td>
+          <td>N/A</td>
+        </tr>
+        <tr>
+          <td>Extraction activity logs</td>
+          <td>Retained for internal audit and analytics; accessible to J2W administrators. Deleted on account deletion request.</td>
+          <td>Supabase database</td>
+        </tr>
+        <tr>
+          <td>API cost logs</td>
+          <td>Retained for billing oversight. Deleted on account deletion request.</td>
+          <td>Supabase database</td>
+        </tr>
+        <tr>
+          <td>OTP verification codes</td>
+          <td>Automatically expire after <strong>10 minutes</strong>. Marked as used immediately upon successful verification.</td>
+          <td>Supabase database (expired codes may be purged periodically)</td>
+        </tr>
+        <tr>
+          <td>Session state (JWT token, last result)</td>
+          <td>Persists until you click "Sign Out" or uninstall the Extension.</td>
+          <td><code>chrome.storage.local</code> — your device only</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 12. Security -->
+    <h2 id="security">12. Security Measures</h2>
+    <ul>
+      <li>
+        <strong>Encrypted transport</strong> — All communication between the Extension and the
+        backend API is over <strong>HTTPS/TLS</strong>.
+      </li>
+      <li>
+        <strong>Password hashing</strong> — Passwords are stored exclusively as
+        <strong>bcrypt</strong> hashes with a unique per-user salt. Plaintext passwords are
+        never stored, logged, or transmitted.
+      </li>
+      <li>
+        <strong>Signed sessions</strong> — Authentication uses signed <strong>HS256 JWT</strong>
+        tokens with a 30-day expiry, stored only in <code>chrome.storage.local</code> on the
+        user's device.
+      </li>
+      <li>
+        <strong>Email verification</strong> — Account registration and password reset both
+        require a <strong>6-digit OTP</strong> sent to the user's work email, which expires
+        in 10 minutes and is invalidated immediately after use.
+      </li>
+      <li>
+        <strong>Domain restriction</strong> — The backend rejects all requests from email
+        addresses outside <code>@joulestowatts.com</code> and <code>@joulestowatts.co</code>
+        at the server level, enforced independently of the client.
+      </li>
+      <li>
+        <strong>Database security</strong> — User data is stored in a managed PostgreSQL
+        database on Supabase, which provides encryption at rest, access controls, and regular
+        backups.
+      </li>
+    </ul>
+
+    <!-- 13. User Rights -->
+    <h2 id="user-rights">13. Your Rights</h2>
+    <p>
+      As a user of Source Assist, you have the following rights with respect to your personal data:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Right</th><th>Description</th><th>How to Exercise</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Access</strong></td>
+          <td>Request a copy of all personal data we hold about you</td>
+          <td>Email <a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+        <tr>
+          <td><strong>Correction</strong></td>
+          <td>Request correction of inaccurate or incomplete information</td>
+          <td>Email <a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+        <tr>
+          <td><strong>Deletion</strong></td>
+          <td>Request deletion of your account and all associated data records</td>
+          <td>Email <a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+        <tr>
+          <td><strong>Portability</strong></td>
+          <td>Request an export of your activity log data in a machine-readable format</td>
+          <td>Email <a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+        <tr>
+          <td><strong>Objection</strong></td>
+          <td>Object to processing of your data for analytics or audit log purposes</td>
+          <td>Email <a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      All requests will be acknowledged within <strong>5 business days</strong> and resolved
+      within <strong>30 days</strong>. There is no charge for exercising these rights.
+    </p>
+
+    <!-- 14. Children -->
+    <h2 id="children">14. Children's Privacy</h2>
+    <p>
+      Source Assist is an internal professional tool intended exclusively for adult employees of
+      Joules to Watts. It is not directed at children and does not knowingly collect any personal
+      information from individuals under the age of 18. If we become aware that a minor has
+      provided personal information, we will delete it promptly.
+    </p>
+
+    <!-- 15. Changes -->
+    <h2 id="changes">15. Policy Changes</h2>
+    <p>
+      We may revise this Privacy Policy periodically to reflect changes in the Extension's
+      functionality, legal requirements, or operational practices. When we make material changes,
+      we will update the <strong>Last Updated</strong> date at the top of this page.
+    </p>
+    <p>
+      Continued use of the Extension after a policy update constitutes your acceptance of the
+      revised policy. For significant changes affecting how we handle your data, we will
+      communicate directly via the Extension or by email.
+    </p>
+
+    <!-- 16. Contact -->
+    <h2 id="contact">16. Contact Us</h2>
+    <p>
+      If you have questions about this Privacy Policy, wish to exercise your data rights, or
+      have a privacy concern, please contact:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Contact Detail</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Organisation</strong></td><td>Joules to Watts (J2W)</td></tr>
+        <tr><td><strong>Product</strong></td><td>Source Assist Chrome Extension</td></tr>
+        <tr>
+          <td><strong>Privacy Contact</strong></td>
+          <td><a href="mailto:cognition.engine@joulestowatts.com">cognition.engine@joulestowatts.com</a></td>
+        </tr>
+        <tr>
+          <td><strong>Website</strong></td>
+          <td><a href="https://joulestowatts.com" target="_blank" rel="noopener">joulestowatts.com</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="notice notice-blue" style="margin-top:24px;">
+      This Privacy Policy is specific to the <strong>Source Assist Chrome Extension</strong>
+      (Chrome Web Store). It governs only the data processing described herein and does not
+      represent a general privacy policy for Joules to Watts as a company.
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  &copy; 2026 Joules to Watts &nbsp;&middot;&nbsp; Source Assist Chrome Extension &nbsp;&middot;&nbsp;
+  <a href="mailto:cognition.engine@joulestowatts.com">Privacy Contact</a>
+</footer>
+
+</body>
+</html>
