@@ -1,4 +1,6 @@
-const API = 'http://localhost:8000';
+const API_LOCAL = 'http://localhost:8000';
+const API_PROD  = 'https://source-assist.vercel.app';
+const API = API_PROD;
 const ALLOWED_DOMAINS = ['joulestowatts.com', 'joulestowatts.co'];
 
 const EXCEL_ROWS = [
